@@ -36,9 +36,10 @@ def get_pawn_moves(board, pawn_pos):
     # generate all possible moves
     # it can move forward, left or right.
     moves = []
-    if board.pos_is_empty(pawn_pos):
+    if (board.piece_at(pawn_pos) != 'Bp' and
+        board.piece_at(pawn_pos) != 'Wp'):
         # TODO: throw some kind of error.
-        print("TRYING TO MOVE EMPTY PIECE ERROR")
+        print("PAWN NOT FOUND. NO MOVES.")
         return moves
 
     # I dont want to repeat code so set variables here.
@@ -69,10 +70,26 @@ def get_pawn_moves(board, pawn_pos):
         moves.append(two_forward)
     return moves
 
-def get_king_moves():
+def get_king_moves(board, king_pos):
     moves = []
     # one space all 8 directions.
     # make sure in bounds and not home piece.
+    if (board.piece_at(king_pos) != 'BK' and
+        board.piece_at(king_pos) != 'WK'):
+        # TODO: throw some kind of error.
+        print("KING NOT FOUND. NO MOVES")
+        return moves
+    n = util.calc_pos(king_pos, -1, 0)
+    e = util.calc_pos(king_pos, 0, 1)
+    s = util.calc_pos(king_pos, 1, 0)
+    w = util.calc_pos(king_pos, 0, -1)
+
+    ne = util.calc_pos(king_pos, -1, 1)
+    se = util.calc_pos(king_pos, 1, 1)
+    sw = util.calc_pos(king_pos, 1, -1)
+    nw = util.calc_pos(king_pos, -1, -1)
+
+
 
     pass
 

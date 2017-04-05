@@ -85,15 +85,24 @@ class ChessBoard:
         piece_list.remove([dst[0], dst[1]])
         self.set_piece(dst, EMPTY_SPACE)
 
+    def add_piece(self, pos, piece):
+        """ USE THIS TO ADD A PIECE TO THE GAME"""
+        self.set_piece(pos, piece)
+        p_list = self.get_piece_list(piece)
+        p_list.append(pos)
+
     def set_piece(self, pos, piece):
+        """ THIS ONLY ADD PIECE TO MATRIX REPRESENTATION
+        """
         self.board[pos[0]][pos[1]] = piece
     def piece_at(self, pos):
         return self.board[pos[0]][pos[1]]
     def get_piece_list(self, piece):
         if util.is_piece_white(piece):
             return self.white[piece]
-        else:
+        elif util.is_piece_black(piece):
             return self.black[piece]
+        return None
     def pos_is_white_piece(self, pos):
         return util.is_piece_white(self.piece_at(pos))
     def pos_is_black_piece(self, pos):
