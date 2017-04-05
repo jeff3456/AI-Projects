@@ -1,3 +1,5 @@
+import ChessBoard as cb
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -17,6 +19,7 @@ INDEX_PIECE_MAP = {
     5:'q',
     6:'K'
 }
+
 PIECE_INDEX_MAP = {
     '':0,
     'p':1,
@@ -26,52 +29,26 @@ PIECE_INDEX_MAP = {
     'q':5,
     'K':6
 }
-PIECE_UNICODE_MAP = {
-    'Bp':'\u265F',
-    'Bk':'\u265E',
-    'Bb':'\u265D',
-    'Br':'\u265C',
-    'Bq':'\u265B',
-    'BK':'\u265A',
-    'Wp':'\u2659',
-    'Wk':'\u2658',
-    'Wb':'\u2657',
-    'Wr':'\u2656',
-    'Wq':'\u2655',
-    'WK':'\u2654'
-}
 
 def translate_location():
+    # TODO translate chess notation into matrix index
     pass
 
-def make_board():
-    board = []
-    row = []
-    for i in range(8):
-        row.append('')
-    for i in range(8):
-        board.append(row.copy())
-    return board
+def check_valid_move(board, src, dst):
+    # check if out of bounds
+    if (src[0] < 0 or src[0] > 7 or
+        src[1] < 0 or src[0] > 7 or
+        dst[0] < 0 or dst[0] > 7 or
+        dst[1] < 0 or dst[1] > 7):
+        return False
+    # check if there is no piece
+    if board[src[0]][src[1]] == '':
+        return False
 
-def set_up_game(board):
-    for i in range(8):
-        board[1][i] = 'Bp'
-        board[6][i] = 'Wp'
-    black_row = ['Br','Bk','Bb','Bq','BK','Bb','Bk','Br']
-    white_row = ['Wr','Wk','Wb','Wq','WK','Wb','Wk','Wr']
-    board[0] = black_row
-    board[7] = white_row
-    return board
+    return True
 
-def print_board(board):
-    for row in board:
-        for i in range(8):
-            if row[i] == '':
-                print(' ', end='')
-            else:
-                print(PIECE_UNICODE_MAP[row[i]], end='')
-        print('')
-
-board = make_board()
-set_up_game(board)
-print_board(board)
+board = cb.ChessBoard()
+print(board)
+board.move_piece([1,0],[2,0])
+print('----------------')
+print(board)
