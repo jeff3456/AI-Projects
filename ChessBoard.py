@@ -1,21 +1,25 @@
+import chess_utility as util
+
 PIECE_UNICODE_MAP = {
-    'Bp':'\u265F',
-    'Bk':'\u265E',
-    'Bb':'\u265D',
-    'Br':'\u265C',
-    'Bq':'\u265B',
-    'BK':'\u265A',
-    'Wp':'\u2659',
-    'Wk':'\u2658',
-    'Wb':'\u2657',
-    'Wr':'\u2656',
-    'Wq':'\u2655',
-    'WK':'\u2654'
+    'Wp':'\u265F',
+    'Wk':'\u265E',
+    'Wb':'\u265D',
+    'Wr':'\u265C',
+    'Wq':'\u265B',
+    'WK':'\u265A',
+    'Bp':'\u2659',
+    'Bk':'\u2658',
+    'Bb':'\u2657',
+    'Br':'\u2656',
+    'Bq':'\u2655',
+    'BK':'\u2654'
 }
+
+EMPTY_SPACE = ''
 
 class ChessBoard:
     """
-    CheckBoard stores the relevant data of the current state of 
+    CheckBoard stores the relevant data of the current state of
     ChessBoard and related methods that change or check that data.
     """
 
@@ -23,7 +27,7 @@ class ChessBoard:
         self.board = _create_board()
         if(set_up):
             _set_up_game(self.board)
-            # Create dictionary for each type 
+            # Create dictionary for each type
             self.white = {}
             self.black = {}
 
@@ -46,13 +50,15 @@ class ChessBoard:
             self.white['Wk'] = [[7,4]]
 
     def __str__(self):
+        # TODO: create build string function and separate it
         output_str = ''
         for row in self.board:
             for i in range(8):
                 if row[i] == '':
                     output_str = output_str + ' '
                 else:
-                    output_str = output_str + PIECE_UNICODE_MAP[row[i]]
+                    output_str = (output_str +
+                                  PIECE_UNICODE_MAP[row[i]])
             output_str = output_str + '\n'
         return output_str
 
@@ -60,23 +66,38 @@ class ChessBoard:
         return self.__str__()
 
     def move_piece(self, src, dst):
-        
-        if self.board[dst[0]][dst[1]] != '':
+        if util.is_piece(self.piece_at(dst)):
             # remove that piece from the list
             self.remove(dst)
-        temp = self.board[src[0]][src[1]]
-        self.board[src[0]][src[1]] = ''
-        self.board[dst[0]][dst[1]] = temp
+        temp = self.piece_at(src)
+        self.set_piece(src, '')
+        self.set_piece(dst, temp)
 
     def remove(self, dst):
-        piece = self.board[dst[0]][dst[1]]
+        piece = self.piece_at(dst)
+        if piece == EMPTY_SPACE:
+            return
         # find white or black piece list
-        if piece[0] == 'W':
-            piece_list = self.white[piece]
+        if util.is_piece_white(piece):
+            piece_list = self.get_piece_list(piece)
         else:
-            piece_list = self.black[piece]
+            piece_list = self.get_piece_list(piece)
         piece_list.remove([dst[0], dst[1]])
-        self.board[dst[0]][dst[1]] = ''
+        self.set_piece(dst, EMPTY_SPACE)
+
+    def set_piece(self, pos, piece):
+        self.board[pos[0]][pos[1]] = piece
+    def piece_at(self, pos):
+        return self.board[pos[0]][pos[1]]
+    def get_piece_list(self, piece):
+        if util.is_piece_white(piece):
+            return self.white[piece]
+        else:
+            return self.black[piece]
+    def pos_is_white_piece(self, pos):
+        return util.is_piece_white(self.piece_at(pos))
+    def pos_is_black_piece(self, pos):
+        return util.is_piece_black(self.piece_at(pos))
 
 def _create_board():
     board = []
