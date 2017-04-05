@@ -98,6 +98,18 @@ class ChessBoard:
         return util.is_piece_white(self.piece_at(pos))
     def pos_is_black_piece(self, pos):
         return util.is_piece_black(self.piece_at(pos))
+    def pos_is_empty(self, pos):
+        return util.is_empty(self.piece_at(pos))
+    def compare_color(self, pos1, pos2):
+        if (self.pos_is_white_piece(pos1) and
+            self.pos_is_white_piece(pos2)):
+            return 0
+        if (self.pos_is_black_piece(pos1) and
+            self.pos_is_black_piece(pos2)):
+            return 0
+        if (self.pos_is_empty(pos1) or self.pos_is_empty(pos2)):
+            return -1
+        return 1
 
 def _create_board():
     board = []
