@@ -39,7 +39,8 @@ def get_pawn_moves(board, pawn_pos):
     if (board.piece_at(pawn_pos) != 'Bp' and
         board.piece_at(pawn_pos) != 'Wp'):
         # TODO: throw some kind of error.
-        print("PAWN NOT FOUND. NO MOVES.")
+        print('PAWN NOT FOUND AT {}. NO MOVES.'
+              .format(pawn_pos))
         return moves
 
     # I dont want to repeat code so set variables here.
@@ -77,7 +78,8 @@ def get_king_moves(board, king_pos):
     if (board.piece_at(king_pos) != 'BK' and
         board.piece_at(king_pos) != 'WK'):
         # TODO: throw some kind of error.
-        print("KING NOT FOUND. NO MOVES")
+        print('KING NOT FOUND AT {}. NO MOVES'
+              .format(king_pos))
         return moves
     n = util.calc_pos(king_pos, -1, 0)
     e = util.calc_pos(king_pos, 0, 1)
@@ -89,9 +91,21 @@ def get_king_moves(board, king_pos):
     sw = util.calc_pos(king_pos, 1, -1)
     nw = util.calc_pos(king_pos, -1, -1)
 
+    king_add_move_helper(board, king_pos, moves, n)
+    king_add_move_helper(board, king_pos, moves, e)
+    king_add_move_helper(board, king_pos, moves, s)
+    king_add_move_helper(board, king_pos, moves, w)
+    king_add_move_helper(board, king_pos, moves, ne)
+    king_add_move_helper(board, king_pos, moves, se)
+    king_add_move_helper(board, king_pos, moves, sw)
+    king_add_move_helper(board, king_pos, moves, nw)
 
+    return moves
 
-    pass
+def king_add_move_helper(board, king_pos, moves, move):
+    if (util.in_bound(move) and
+        board.compare_color(king_pos, move)!=0):
+        moves.append(move)
 
 def get_knight_moves():
     pass
@@ -99,8 +113,45 @@ def get_knight_moves():
 def get_rook_moves():
     pass
 
-def get_queen_moves():
-    pass
+def get_queen_moves(board, q_pos):
+    moves = []
+
+    if (board.piece_at(q_pos) != 'Wq' or
+        board.piece_at(q_pos) != 'Bq'):
+        print('QUEEN NOT FOUND AT {}. NO MOVES.'
+              .format(q_pos))
+        return moves
+    # go all 8 directions and keep adding moves until you
+    #   capture an enemy
+    #   reach the boundary
+    #   are blocked by allied piece
+
+    direction_move_helper(board, q_pos, moves, [1,1])
+    direction_move_helper(board, q_pos, moves, [1,0])
+    direction_move_helper(board, q_pos, moves, [1,-1])
+    direction_move_helper(board, q_pos, moves, [0,1])
+    direction_move_helper(board, q_pos, moves, [0,-1])
+    direction_move_helper(board, q_pos, moves, [-1,1])
+    direction_move_helper(board, q_pos, moves, [-1,0])
+    direction_move_helper(board, q_pos, moves, [-1,-1])
+    return moves
+
+def direction_move_helper(board, q_pos, moves, direction):
+    next_move = util.calc_pos(q_pos, direction[0], direction[1])
+    while(true):
+        # if next_move is empty space. add it to the list
+        if not util.in_bounds(next_move):
+            break
+        if board.pos_is_empty(next_move):
+            moves.add(next_move)
+        elif board.compare_color(q_pos, next_move) == 1:
+            moves.add(next_move)
+            break
+        elif board.compare_color(q_pos, next_move) == 0:
+            break
+        next_move = util.calc_pos(next_move,
+                                  direction[0],
+                                  direction[1])
 
 def get_bishop_moves():
     pass
