@@ -26,6 +26,9 @@ def get_legal_move_range_of_piece():
 
 def is_check(chess_board, king_pos):
     # This function should also be light weight.
+    # Get all legal moves of opponent and check if
+    #   king pos is in possible move range.
+
     pass
 
 def get_list_of_available_moves(chess_board, color):
@@ -91,27 +94,77 @@ def get_king_moves(board, king_pos):
     sw = util.calc_pos(king_pos, 1, -1)
     nw = util.calc_pos(king_pos, -1, -1)
 
-    king_add_move_helper(board, king_pos, moves, n)
-    king_add_move_helper(board, king_pos, moves, e)
-    king_add_move_helper(board, king_pos, moves, s)
-    king_add_move_helper(board, king_pos, moves, w)
-    king_add_move_helper(board, king_pos, moves, ne)
-    king_add_move_helper(board, king_pos, moves, se)
-    king_add_move_helper(board, king_pos, moves, sw)
-    king_add_move_helper(board, king_pos, moves, nw)
+    add_move_helper(board, king_pos, moves, n)
+    add_move_helper(board, king_pos, moves, e)
+    add_move_helper(board, king_pos, moves, s)
+    add_move_helper(board, king_pos, moves, w)
+    add_move_helper(board, king_pos, moves, ne)
+    add_move_helper(board, king_pos, moves, se)
+    add_move_helper(board, king_pos, moves, sw)
+    add_move_helper(board, king_pos, moves, nw)
 
     return moves
 
-def king_add_move_helper(board, king_pos, moves, move):
+def add_move_helper(board, king_pos, moves, move):
     if (util.in_bound(move) and
         board.compare_color(king_pos, move)!=0):
         moves.append(move)
 
-def get_knight_moves():
-    pass
+def get_knight_moves(k_pos):
+    moves = []
+    if (board.piece_at(k_pos) != 'Wk' and
+        board.piece_at(k_pos) != 'Bk'):
+        print('KNIGHT NOT FOUND AT {}. NO MOVES'
+              .format(k_pos))
+        return moves
 
-def get_rook_moves():
-    pass
+    nne = util.calc_pos(k_pos, -2, 1)
+    nee = util.calc_pos(k_pos, -1, 2)
+    see = util.calc_pos(k_pos, 1, 2)
+    sse = util.calc_pos(k_pos, 2, 1)
+    ssw = util.calc_pos(k_pos, 2, -1)
+    sww = util.calc_pos(k_pos, 1, -2)
+    nww = util.calc_pos(k_pos, -1, -2)
+    nnw = util.calc_pos(k_pos, -2, -1)
+
+    add_move_helper(board, k_pos, moves, nne)
+    add_move_helper(board, k_pos, moves, nee)
+    add_move_helper(board, k_pos, moves, see)
+    add_move_helper(board, k_pos, moves, sse)
+    add_move_helper(board, k_pos, moves, ssw)
+    add_move_helper(board, k_pos, moves, sww)
+    add_move_helper(board, k_pos, moves, nww)
+    add_move_helper(board, k_pos, moves, nnw)
+    return moves
+
+def get_bishop_moves(b_pos):
+    moves = []
+    if (board.piece_at(b_pos) != 'Wb' or
+        board.piece_at(b_pos) != 'Bb'):
+        print('BISHOP NOT FOUND AT {}. NO MOVES'
+              .format(b_pos))
+        return moves
+
+    direction_move_helper(board, b_pos, moves, [1,1])
+    direction_move_helper(board, b_pos, moves, [1,-1])
+    direction_move_helper(board, b_pos, moves, [-1,1])
+    direction_move_helper(board, b_pos, moves, [-1,-1])
+    return moves
+
+def get_rook_moves(board, r_pos):
+    moves = []
+
+    if (board.piece_at(r_pos) != 'Wr' or
+        board.piece_at(r_pos) != 'Br'):
+        print('ROOK NOT FOUND AT {}. NO MOVES'
+              .format(r_pos))
+        return moves
+
+    direction_move_helper(board, r_pos, moves, [1,0])
+    direction_move_helper(board, r_pos, moves, [-1,0])
+    direction_move_helper(board, r_pos, moves, [0,1])
+    direction_move_helper(board, r_pos, moves, [0,-1])
+    return moves
 
 def get_queen_moves(board, q_pos):
     moves = []
@@ -143,7 +196,11 @@ def direction_move_helper(board, q_pos, moves, direction):
         if not util.in_bounds(next_move):
             break
         if board.pos_is_empty(next_move):
-            moves.add(next_move)
+            moves.add(next  direction_move_helper(board, b_pos, moves, [1,1])
+                    direction_move_helper(board, b_pos, moves, [1,-1])
+                    direction_move_helper(board, b_pos, moves, [-1,1])
+                    direction_move_helper(board, b_pos, moves, [-1,-1])
+                    return moves
         elif board.compare_color(q_pos, next_move) == 1:
             moves.add(next_move)
             break
@@ -153,6 +210,4 @@ def direction_move_helper(board, q_pos, moves, direction):
                                   direction[0],
                                   direction[1])
 
-def get_bishop_moves():
-    pass
 
