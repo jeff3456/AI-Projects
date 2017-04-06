@@ -3,26 +3,72 @@ import chess_utility as util
 W_PAWN_START_ROW = 6
 B_PAWN_START_ROW = 1
 
+def prompt_user_move(chess_board):
+    while(True):
+        print(chess_board)
+
+        # prompting user for what to move where
+        while(True):
+            input_move = input('what piece would you like to move? ("2,1")\n')
+            piece_pos = list(map(lambda x: int(x), input_move.split(',')))
+
+            dst = input('where should the piece go? ("4,2")\n')
+            dst = list(map(lambda x: int(x), dst.split(',')))
+            if is_valid_move(chess_board, piece_pos, dst):
+                break
+            print('Something went wrong. Try inputting correctly.')
+            print(chess_board)
+        print('piece_pos', piece_pos)
+        piece = chess_board.piece_at(piece_pos)
+        print('piece_locs1: ',chess_board.get_piece_list(piece))
+        chess_board.move_piece(piece_pos, dst)
+        print('piece_locs2: ',chess_board.get_piece_list(piece))
+
 def is_valid_move(chess_board, src, dst):
     # This function needs to be efficient because
     #  we will be calling it a lot in search.
+    if not (util.in_bound(src) and util.in_bound(dst)):
+        return False
+    if chess_board.pos_is_empty(src):
+        return False
 
-    # First check for current check
+    piece = chess_board.piece_at(src)
+    # TODO: First check for current check
 
-        # Then check for current checkmate
-
-    # Check if dst is a piece being taken
-    # Make sure it not home piece.
+        # TODO: Then check for current checkmate
 
     # Then check if move is within range of piece type
+    move_range = get_legal_move_range_of_piece(chess_board,
+                                               piece,
+                                               src)
+    print(piece, ' move range: ', move_range)
+    if not (dst in move_range):
+        return False
+
+    # you cannot take your own piece
+    if chess_board.compare_color(src, dst) == 0:
+        return False
+    return True
 
     # Then check if moving causes home king to check
-    pass
 
-def get_legal_move_range_of_piece():
+def get_legal_move_range_of_piece(board, piece, pos):
     # This should be really light weight.
     # legal move or just any move?
-    pass
+
+    if piece[1] == 'p':
+        return get_pawn_moves(board, pos)
+    elif piece[1] == 'K':
+        return get_king_moves(board, pos)
+    elif piece[1] == 'q':
+        return get_queen_moves(board, pos)
+    elif piece[1] == 'k':
+        return get_knight_moves(board, pos)
+    elif piece[1] == 'r':
+        return get_rook_moves(board, pos)
+    elif piece[1] == 'b':
+        return get_bishop_moves(board, pos)
+
 
 def is_check(chess_board, king_pos):
     # This function should also be light weight.
@@ -110,7 +156,7 @@ def add_move_helper(board, king_pos, moves, move):
         board.compare_color(king_pos, move)!=0):
         moves.append(move)
 
-def get_knight_moves(k_pos):
+def get_knight_moves(board, k_pos):
     moves = []
     if (board.piece_at(k_pos) != 'Wk' and
         board.piece_at(k_pos) != 'Bk'):
@@ -137,9 +183,9 @@ def get_knight_moves(k_pos):
     add_move_helper(board, k_pos, moves, nnw)
     return moves
 
-def get_bishop_moves(b_pos):
+def get_bishop_moves(board, b_pos):
     moves = []
-    if (board.piece_at(b_pos) != 'Wb' or
+    if (board.piece_at(b_pos) != 'Wb' and
         board.piece_at(b_pos) != 'Bb'):
         print('BISHOP NOT FOUND AT {}. NO MOVES'
               .format(b_pos))
@@ -154,7 +200,7 @@ def get_bishop_moves(b_pos):
 def get_rook_moves(board, r_pos):
     moves = []
 
-    if (board.piece_at(r_pos) != 'Wr' or
+    if (board.piece_at(r_pos) != 'Wr' and
         board.piece_at(r_pos) != 'Br'):
         print('ROOK NOT FOUND AT {}. NO MOVES'
               .format(r_pos))
@@ -169,7 +215,7 @@ def get_rook_moves(board, r_pos):
 def get_queen_moves(board, q_pos):
     moves = []
 
-    if (board.piece_at(q_pos) != 'Wq' or
+    if (board.piece_at(q_pos) != 'Wq' and
         board.piece_at(q_pos) != 'Bq'):
         print('QUEEN NOT FOUND AT {}. NO MOVES.'
               .format(q_pos))
@@ -191,18 +237,15 @@ def get_queen_moves(board, q_pos):
 
 def direction_move_helper(board, q_pos, moves, direction):
     next_move = util.calc_pos(q_pos, direction[0], direction[1])
-    while(true):
+    while(True):
         # if next_move is empty space. add it to the list
-        if not util.in_bounds(next_move):
+        if not util.in_bound(next_move):
             break
+        # the space is empty and we can keep adding moves
         if board.pos_is_empty(next_move):
-            moves.add(next  direction_move_helper(board, b_pos, moves, [1,1])
-                    direction_move_helper(board, b_pos, moves, [1,-1])
-                    direction_move_helper(board, b_pos, moves, [-1,1])
-                    direction_move_helper(board, b_pos, moves, [-1,-1])
-                    return moves
+            moves.append(next_move)
         elif board.compare_color(q_pos, next_move) == 1:
-            moves.add(next_move)
+            moves.append(next_move)
             break
         elif board.compare_color(q_pos, next_move) == 0:
             break

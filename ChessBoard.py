@@ -41,18 +41,21 @@ class ChessBoard:
             self.black['Bb'] = [[0,2],[0,5]]
             self.black['Br'] = [[0,0],[0,7]]
             self.black['Bq'] = [[0,3]]
-            self.black['Bk'] = [[0,4]]
+            self.black['BK'] = [[0,4]]
 
             self.white['Wk'] = [[7,1],[7,6]]
             self.white['Wb'] = [[7,2],[7,5]]
             self.white['Wr'] = [[7,0],[7,7]]
             self.white['Wq'] = [[7,3]]
-            self.white['Wk'] = [[7,4]]
+            self.white['WK'] = [[7,4]]
 
     def __str__(self):
         # TODO: create build string function and separate it
-        output_str = ''
+        output_str = ' 01234567\n'
+        row_num = 0
         for row in self.board:
+            output_str += str(row_num)
+            row_num += 1
             for i in range(8):
                 if row[i] == '':
                     output_str = output_str + ' '
@@ -66,12 +69,19 @@ class ChessBoard:
         return self.__str__()
 
     def move_piece(self, src, dst):
-        if util.is_piece(self.piece_at(dst)):
-            # remove that piece from the list
-            self.remove(dst)
-        temp = self.piece_at(src)
-        self.set_piece(src, '')
-        self.set_piece(dst, temp)
+        piece = self.piece_at(src)
+        p_list = self.get_piece_list(piece)
+        if not (src in p_list):
+            print('MOVE FAILED COULD NOT FIND LOCATION IN LIST')
+            return
+        for loc in p_list:
+            if src == loc:
+                piece_loc = loc
+        self.remove(dst)
+        piece_loc[0] = dst[0]
+        piece_loc[1] = dst[1]
+        self.set_piece(dst, piece)
+        self.set_piece(src, EMPTY_SPACE)
 
     def remove(self, dst):
         piece = self.piece_at(dst)
