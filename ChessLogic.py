@@ -71,13 +71,11 @@ def get_legal_move_range_of_piece(board, piece, pos):
 
 
 def is_check(chess_board, king_pos):
-    # This function should also be light weight.
-    # Get all legal moves of opponent and check if
-    #   king pos is in possible move range.
+    # go through opponent moves and see if king_pos
 
     pass
 
-def get_list_of_available_moves(chess_board, color):
+def get_list_of_all_moves(chess_board, color):
     # This function should just call get_move_range on all pieces.
     pass
 
