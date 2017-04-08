@@ -68,6 +68,33 @@ class ChessBoard:
     def __repr__(self):
         return self.__str__()
 
+    def castling(self, king_pos, rook_pos):
+        # TODO: FINISH implementing this
+        pass
+
+    def pawn_promotion(self, pawn_pos, promotion):
+        # TODO: this should simply remove the pawn from
+        #    game and add the promoted piece into the game
+        pass
+
+    def en_passant(self, pawn_pos, enemy_pawn_pos, dst):
+        # Remove the enemy pawn
+        # move the pawn to the dst.
+        piece = self.piece_at(src)
+        p_list = self.get_piece_list(piece)
+        if not (src in p_list):
+            print('MOVE FAILED COULD NOT FIND LOCATION IN LIST')
+            return
+        for loc in p_list:
+            if src == loc:
+                piece_loc = loc
+        self.remove(dst)
+        self.remove(enemy_pawn_pos)
+        piece_loc[0] = dst[0]
+        piece_loc[1] = dst[1]
+        self.set_piece(dst, piece)
+        self.set_piece(src, EMPTY_SPACE)
+
     def move_piece(self, src, dst):
         piece = self.piece_at(src)
         p_list = self.get_piece_list(piece)
@@ -84,14 +111,12 @@ class ChessBoard:
         self.set_piece(src, EMPTY_SPACE)
 
     def remove(self, dst):
+        # DELETES PIECE FROM BOTH LIST AND MATRIX
         piece = self.piece_at(dst)
         if piece == EMPTY_SPACE:
             return
         # find white or black piece list
-        if util.is_piece_white(piece):
-            piece_list = self.get_piece_list(piece)
-        else:
-            piece_list = self.get_piece_list(piece)
+        piece_list = self.get_piece_list(piece)
         piece_list.remove([dst[0], dst[1]])
         self.set_piece(dst, EMPTY_SPACE)
 
