@@ -132,6 +132,10 @@ class ChessBoard:
         self.board[pos[0]][pos[1]] = piece
     def piece_at(self, pos):
         return self.board[pos[0]][pos[1]]
+    def color_at(self, pos):
+        if self.board[pos[0]][pos[1]] == EMPTY_SPACE:
+            return EMPTY_SPACE
+        return self.board[pos[0]][pos[1]][0]
     def get_piece_list(self, piece):
         if util.is_piece_white(piece):
             return self.white[piece]

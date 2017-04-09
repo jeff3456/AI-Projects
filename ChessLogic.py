@@ -2,8 +2,11 @@ import chess_utility as util
 
 W_PAWN_START_ROW = 6
 B_PAWN_START_ROW = 1
+WHITE = 'W'
+BLACK = 'B'
 
 def prompt_user_move(chess_board):
+    turn_color = WHITE
     while(True):
         print(chess_board)
 
@@ -14,7 +17,7 @@ def prompt_user_move(chess_board):
 
             dst = input('where should the piece go? ("4,2")\n')
             dst = list(map(lambda x: int(x), dst.split(',')))
-            if is_valid_move(chess_board, piece_pos, dst):
+            if is_valid_move(chess_board, piece_pos, dst, turn_color):
                 break
             print('Something went wrong. Try inputting correctly.')
             print(chess_board)
@@ -24,23 +27,30 @@ def prompt_user_move(chess_board):
         chess_board.move_piece(piece_pos, dst)
         print('piece_locs2: ',chess_board.get_piece_list(piece))
 
-def is_valid_move(chess_board, src, dst):
+def is_valid_move(chess_board, src, dst, turn_color):
     # This function needs to be efficient because
     #  we will be calling it a lot in search.
+
     if not (util.in_bound(src) and util.in_bound(dst)):
         return False
     if chess_board.pos_is_empty(src):
         return False
 
+    # Check if we are moving piece of right color
     piece = chess_board.piece_at(src)
+    if piece[0] != turn_color:
+        return False
+
     # TODO: First check for current check
+    if turn_color == WHITE:
+
 
         # TODO: Then check for current checkmate
 
     # Then check if move is within range of piece type
-    move_range = get_legal_move_range_of_piece(chess_board,
-                                               piece,
-                                               src)
+    move_range = get_move_range_of_piece(chess_board,
+                                         piece,
+                                         src)
     print(piece, ' move range: ', move_range)
     if not (dst in move_range):
         return False
@@ -52,9 +62,13 @@ def is_valid_move(chess_board, src, dst):
 
     # Then check if moving causes home king to check
 
-def get_legal_move_range_of_piece(board, piece, pos):
+def is_special_move(board, src, dst):
+    # This function will return true if it is a special move
+    # or false if it is not.
+    pass
+
+def get_move_range_of_piece(board, piece, pos):
     # This should be really light weight.
-    # legal move or just any move?
 
     if piece[1] == 'p':
         return get_pawn_moves(board, pos)
@@ -69,15 +83,77 @@ def get_legal_move_range_of_piece(board, piece, pos):
     elif piece[1] == 'b':
         return get_bishop_moves(board, pos)
 
-
 def is_check(chess_board, king_pos):
     # go through opponent moves and see if king_pos
+    color = chess_board.color_at(king_pos)
 
-    pass
+    if color == WHITE:
+        opponent_moves = get_color_moves(chess_board,
+                                               BLACK)
+    elif color == BLACK:
+        opponent_moves = get_color_moves(chess_board,
+                                               WHITE)
+    else:
+        print('COLOR UNKNOWN AT {}.'.format(king_pos))
+        return
+    for piece_key in opponent_moves:
+        p_move_list = opponent_moves[piece_key]
+        # p_move_list is a list of moves each piece of
+        #    the same type can perform
+        for moves_list in p_move_list:
+            if king_pos in moves_list:
+                return True
+    return False
 
-def get_list_of_all_moves(chess_board, color):
-    # This function should just call get_move_range on all pieces.
-    pass
+
+def get_color_moves(chess_board, color):
+    # This function should just call get_move_range for all pieces
+    opponent_moves = {}
+
+    # Get piece location list for pawns
+    pawn_piece = color+'p'
+    opponent_moves[pawn_piece] = get_moves_from_piece(chess_board,
+                                                      pawn_piece)
+    # Get color knight moves
+    knight_piece = color+'k'
+    opponent_moves[knight_piece] = get_moves_from_piece(chess_board,
+                                                         knight_piece)
+    # Get color bishop moves
+    bishop_piece = color+'b'
+    opponent_moves[bishop_piece] = get_moves_from_piece(chess_board,
+                                                        knight_piece)
+    # Get color rook moves
+    rook_piece = color+'r'
+    opponent_moves[rook_piece] = get_moves_from_piece(chess_board,
+                                                      rook_piece)
+    # Get color queen moves
+    queen_piece = color+'q'
+    opponent_moves[queen_piece] = get_moves_from_piece(chess_board,
+                                                       queen_piece)
+    # Get color king moves
+    king_piece = color+'K'
+    opponent_moves[king_piece] = get_moves_from_piece(chess_board,
+                                                      king_piece)
+    return get_color_moves
+
+def get_move_ranges_of_pieces(chess_board, piece):
+    # Returns a list of lists of moves that each piece performs
+    piece_list = chess_board.get_piece_list(piece)
+    piece_moves = []
+    for pos in piece_list:
+        if piece[1] == 'p': # piece is pawn.
+            piece_moves.append(get_pawn_moves(board, pos))
+        elif piece[1] == 'k': # piece is knight
+            piece_moves.append(get_knight_moves(board, pos))
+        elif piece[1] == 'b': # piece is bishop
+            piece_moves.append(get_bishop_moves(board, pos))
+        elif piece[1] == 'r': # piece is rook
+            piece_moves.append(get_rook_moves(board, pos))
+        elif piece[1] == 'q': # piece is queen
+            piece_moves.append(get_queen_moves(board, pos))
+        elif piece[1] == 'K': # piece is king
+            piece_moves.append(get_king_moves(board, pos))
+    return piece_moves
 
 def get_pawn_moves(board, pawn_pos):
     # generate all possible moves
